@@ -1,4 +1,4 @@
-# Data Extraction From a Pdf File
+# Data extraction from a pdf file
 A script to extract text data from a pdf file, converts it to pandas data frame and saves it in to a csv file.
 
 ## Requirements
