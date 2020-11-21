@@ -3,7 +3,7 @@ A script to extract text data from a pdf file, converts it to pandas data frame 
 
 ## Requirements
   Python 3.7  
-  pdfplumber
+  pdfplumber  
   pandas
   
 ## Visualization of extracted text from pdf file to excel
