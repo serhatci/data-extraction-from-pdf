@@ -6,5 +6,5 @@ A script to extract text data from a pdf file, converts it to pandas data frame 
   pdfplumber  
   pandas
   
-## Visualization of extracted text from pdf file to excel
+## Visualization of extracted text from pdf file
 ![alt text](readme.jpg)
