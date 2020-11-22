@@ -11,15 +11,16 @@ def check_unwanted_keywords_in_the_line(line):
 
     Returns:
         (str): matching keyword
-    """    
+    """
     unwanted_keywords = ['Identity Theft',
                          'Breach List:',
                          'Records Exposed:',
                          'Breached Entity:']
     for keyword in unwanted_keywords:
-        if re.search(keyword,line):
-            return re.search(keyword,line).group()
-    
+        if re.search(keyword, line):
+            return re.search(keyword, line).group()
+
+
 def get_data_lines_from_text(text):
     """Collects lines from text which are only related for data extraction.
 
@@ -28,17 +29,18 @@ def get_data_lines_from_text(text):
 
     Returns:
         data_lines (list): lines for data extraction
-    """        
+    """
     data_lines = []
     group = []
     for line in text.split('\n'):
         result = check_unwanted_keywords_in_the_line(line)
         if result is None:
             group.append(line)
-        if result == 'Breached Entity:' and group!=[]:
+        if result == 'Breached Entity:' and group != []:
             data_lines.append(group)
             group = []
     return data_lines
+
 
 def extract_data(data_list):
     """Extract necessary data from lines in the data list.
@@ -48,22 +50,23 @@ def extract_data(data_list):
 
     Returns:
         data (list): final data for appending in to a dataframe.
-    """    
-    data =[]
+    """
+    data = []
     for block in data_list:
-        state = get_state(block[0]) 
+        state = get_state(block[0])
         date = get_date(block[0])
         b_type = get_type(block[0])
         category = get_category(block[0])
         records = get_records(block[0])
-       
-        extracted_text = (' ').join([state,date,b_type,category,records])
-        entity = get_entity(block,extracted_text)
-        
+
+        extracted_text = (' ').join([state, date, b_type, category, records])
+        entity = get_entity(block, extracted_text)
+
         source = get_source(block[-2])
         url = get_url(block[-1])
-        
-        data.append([entity,state,date,b_type,category,records,source,url])
+
+        data.append([entity, state, date, b_type,
+                     category, records, source, url])
     return data
 
 
@@ -72,16 +75,17 @@ def check_data(func):
 
     Args:
         func (obj): function used in try-except block
-        
+
     Except:
         (str) : in case of exception assigns '-' for the missing data.
-    """    
+    """
     def inner(line):
         try:
             return func(line)
         except:
             return '-'
     return inner
+
 
 @check_data
 def get_records(line1):
@@ -92,9 +96,10 @@ def get_records(line1):
 
     Returns:
         str: record reported
-    """    
+    """
     line1 = line1.split(' ')
     return line1[-1]
+
 
 @check_data
 def get_category(line1):
@@ -105,9 +110,10 @@ def get_category(line1):
 
     Returns:
         str: breach category
-    """    
+    """
     line1 = line1.split(' ')
     return line1[-2]
+
 
 @check_data
 def get_type(line1):
@@ -118,8 +124,9 @@ def get_type(line1):
 
     Returns:
         str: breach type
-    """  
-    return 'Paper Data' if re.search('Paper Data',line1) else 'Electronic'
+    """
+    return 'Paper Data' if re.search('Paper Data', line1) else 'Electronic'
+
 
 @check_data
 def get_date(line1):
@@ -130,8 +137,9 @@ def get_date(line1):
 
     Returns:
         str: published date
-    """ 
-    return re.search(r'...../\d{4}',line1).group().strip()
+    """
+    return re.search(r'(\d{2}|\d{1})/(\d{2}|\d{1})/\d{4}', line1).group().strip()
+
 
 @check_data
 def get_state(line1):
@@ -143,7 +151,8 @@ def get_state(line1):
     Returns:
         str: state
     """
-    return re.search(r'\b[A-Z][A-Z]\b',line1).group().strip()
+    return re.search(r'\b[A-Z][A-Z]\b', line1).group().strip()
+
 
 @check_data
 def get_source(line2):
@@ -157,6 +166,7 @@ def get_source(line2):
     """
     return line2.split(' ')[1]
 
+
 @check_data
 def get_url(line3):
     """Collects URL from the line.
@@ -169,7 +179,8 @@ def get_url(line3):
     """
     return line3.split(' ')[1]
 
-def get_entity(block,extracted_text):
+
+def get_entity(block, extracted_text):
     """Collect entity from the line1 of data block
 
     Args:
@@ -180,45 +191,47 @@ def get_entity(block,extracted_text):
         (str): entity
     """
     try:
-        entity = re.sub(extracted_text,'',block[0])
-        if len(block) >3:
-            for i in range(1,len(block)-2):
+        entity = re.sub(extracted_text, '', block[0])
+        if len(block) > 3:
+            for i in range(1, len(block)-2):
                 entity += block[i]
-        return entity.replace('  ',' ').replace('"','').strip()
+        return entity.replace('  ', ' ').replace('"', '').strip()
     except:
-        return '-'     
+        return '-'
+
 
 def file_list():
     """Provides files to be extracted.
-    
+
     Files should be in the same folder with script file.
 
     Returns:
         (list): file names
-    """    
+    """
     return ['ITRCAnnualReportPdf2019 Extract.pdf',
             'ITRCAnnualReportPdf2018 Extract.pdf']
+
 
 def create_dataframe():
     """Provied the dataframe with appropriate column names.
 
     Returns:
         (obj): pandas dataframe
-    """    
+    """
     return pd.DataFrame(columns=['BreachedEntity',
-                               'State',
-                               'PublishedDate',
-                               'BreachType',
-                               'BreachCategory',
-                               'RecorsReported',
-                               'Source',
-                               'URL'])
-    
+                                 'State',
+                                 'PublishedDate',
+                                 'BreachType',
+                                 'BreachCategory',
+                                 'RecorsReported',
+                                 'Source',
+                                 'URL'])
+
 
 if __name__ == "__main__":
-    
+
     df = create_dataframe()
-    
+
     for file in file_list():
         with pdfplumber.open(file) as pdf:
             pages = pdf.pages
@@ -227,13 +240,8 @@ if __name__ == "__main__":
                 data_lines = get_data_lines_from_text(text)
                 data = extract_data(data_lines)
                 df = df.append(pd.DataFrame(data, columns=df.columns))
-                print(f'EXTRACTED: page {page.page_number} of {file}')    
-        
-        df.to_csv(f'{file[:-4]}.csv',index=False,sep=';')
+                print(f'EXTRACTED: page {page.page_number} of {file}')
+
+        df.to_csv(f'{file[:-4]}.csv', index=False, sep=';')
         print('Data successfully extracted and saved to csv file!...')
         df.iloc[0:0]
-                
-        
-                
-
-        
