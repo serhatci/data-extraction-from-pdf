@@ -208,8 +208,8 @@ def file_list():
     Returns:
         (list): file names
     """
-    return ['ITRCAnnualReportPdf2019 Extract.pdf',
-            'ITRCAnnualReportPdf2018 Extract.pdf']
+    return ['ITRCAnnualReportPdf2019.pdf',
+            'ITRCAnnualReportPdf2018.pdf']
 
 
 def create_dataframe():
