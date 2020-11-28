@@ -22,13 +22,15 @@ def check_unwanted_keywords_in_the_line(line):
 
 
 def get_data_lines_from_text(text):
-    """Collects lines from text which are only related for data extraction.
+    """Extract and groups lines from text which are only 
+    related for data extraction.
 
     Args:
         text (str): text collected from single page of pfd file.
 
     Returns:
-        data_lines (list): lines for data extraction
+        data_lines (list): group of lines including only relevant data 
+        for extraction
     """
     data_lines = []
     group = []
@@ -36,7 +38,7 @@ def get_data_lines_from_text(text):
         result = check_unwanted_keywords_in_the_line(line)
         if result is None:
             group.append(line)
-        if result == 'Breached Entity:' and group != []:
+        elif result == 'Breached Entity:' and group != []:
             data_lines.append(group)
             group = []
     return data_lines
@@ -208,8 +210,8 @@ def file_list():
     Returns:
         (list): file names
     """
-    return ['ITRCAnnualReportPdf2019.pdf',
-            'ITRCAnnualReportPdf2018.pdf']
+    return ['scITRCAnnualReportPdf2019.pdf',
+            'script/ITRCAnnualReportPdf2018.pdf']
 
 
 def create_dataframe():
