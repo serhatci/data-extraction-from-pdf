@@ -171,7 +171,8 @@ def get_source(line2):
     Returns:
         str: source
     """
-    return line2.split(' ')[1]
+    src = line2.split(' ')[1]
+    return src if src != '' else '-'
 
 
 @check_data
@@ -184,7 +185,8 @@ def get_url(line3):
     Returns:
         str: URL
     """
-    return line3.split(' ')[1]
+    link = line3.split(' ')[1]
+    return link if link != '' else '-'
 
 
 def get_entity(block, extracted_text):
@@ -202,9 +204,11 @@ def get_entity(block, extracted_text):
         if len(block) > 3:
             for i in range(1, len(block)-2):
                 entity += block[i]
-        return entity.replace('  ', ' ').replace('"', '').strip()
     except:
         return '-'
+    else:
+        ent = entity.replace('  ', ' ').replace('"', '').strip()
+        return ent if ent != '' else '-'
 
 
 def file_list():
