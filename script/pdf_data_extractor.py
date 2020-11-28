@@ -99,8 +99,8 @@ def get_records(line1):
     Returns:
         str: record reported
     """
-    line1 = line1.split(' ')
-    return line1[-1]
+    record = line1.split(' ')[-1]
+    return record if record != '' else '-'
 
 
 @check_data
@@ -127,7 +127,12 @@ def get_type(line1):
     Returns:
         str: breach type
     """
-    return 'Paper Data' if re.search('Paper Data', line1) else 'Electronic'
+    if re.search('Paper Data', line1) is not None:
+        return 'Paper Data'
+    elif re.search('Electronic', line1) is not None:
+        return 'Electronic'
+    else:
+        return '-'
 
 
 @check_data
