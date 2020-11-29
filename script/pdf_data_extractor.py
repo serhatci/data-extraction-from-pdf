@@ -129,7 +129,7 @@ def get_type(line1):
     """
     if re.search('Paper Data', line1) is not None:
         return 'Paper Data'
-    elif re.search('Electronic', line1) is not None:
+    if re.search('Electronic', line1) is not None:
         return 'Electronic'
     return '-'
 
