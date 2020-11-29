@@ -84,7 +84,7 @@ def check_data(func):
     def inner(line):
         try:
             return func(line)
-        except:
+        except Exception:
             return '-'
     return inner
 
@@ -131,8 +131,7 @@ def get_type(line1):
         return 'Paper Data'
     elif re.search('Electronic', line1) is not None:
         return 'Electronic'
-    else:
-        return '-'
+    return '-'
 
 
 @check_data
@@ -204,7 +203,7 @@ def get_entity(block, extracted_text):
         if len(block) > 3:
             for i in range(1, len(block)-2):
                 entity += block[i]
-    except:
+    except Exception:
         return '-'
     else:
         ent = entity.replace('  ', ' ').replace('"', '').strip()
@@ -255,4 +254,3 @@ if __name__ == "__main__":
 
         df.to_csv(f'{file[:-4]}.csv', index=False, sep=';')
         print('Data successfully extracted and saved to csv file!...')
-        df.iloc[0:0]
