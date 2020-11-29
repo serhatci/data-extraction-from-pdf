@@ -2,6 +2,8 @@
 
 A script to extract text data from a pdf file, converts it to pandas data frame and saves it in to a csv file.
 
+[![CodeFactor](https://www.codefactor.io/repository/github/serhatci/data-extraction-from-pdf/badge)](https://www.codefactor.io/repository/github/serhatci/data-extraction-from-pdf)
+
 ## Installation
 
 You can clone below repository:  
