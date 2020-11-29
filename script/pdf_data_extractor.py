@@ -219,7 +219,7 @@ def file_list():
     Returns:
         (list): file names
     """
-    return ['scITRCAnnualReportPdf2019.pdf',
+    return ['script/ITRCAnnualReportPdf2019.pdf',
             'script/ITRCAnnualReportPdf2018.pdf']
 
 
