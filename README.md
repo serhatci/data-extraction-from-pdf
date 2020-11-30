@@ -15,7 +15,7 @@ install the requirements:
 `pip install -r requirements.txt`
 
 Be sure following pdf files are in the script folder:  
-ITRCAnnualReportPdf2019.pdf
+ITRCAnnualReportPdf2019.pdf  
 ITRCAnnualReportPdf2018.pdf
 
 and run the application:  
