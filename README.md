@@ -32,7 +32,7 @@ pip install pdfplumber
 pip install pandas
 ```
 
-## Visualization of extracted text from pdf file
+# Demonstration of extracted text from pdf file
 
 Below image represents the format of pdf file and the extracted data in the CSV file.
 
