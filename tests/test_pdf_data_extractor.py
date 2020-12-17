@@ -7,32 +7,28 @@ class TestPdfDataExtractor(unittest.TestCase):
     """
 
     def test_check_unwanted_keywords_in_the_line(self):
-        line = 'Identity Theft Resource Center'
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, 'Identity Theft')
+        test_cases = [
+            {'input': 'Identity Theft Resource Center',
+             'expected': 'Identity Theft'},
+            {'input': '2018 Breach List: 1,244',
+             'expected': 'Breach List:'},
+            {'input': 'Records Exposed: 446,515,334',
+             'expected': 'Records Exposed:'},
+            {'input': 'Breached Entity: State Published Date Breach  Category',
+             'expected': 'Breached Entity:'},
+            {'input': 'No unwanted keyword in this text',
+                'expected': None},
+            {'input': '',
+             'expected': None},
+        ]
 
-        line = '2018 Breach List: 1,244'
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, 'Breach List:')
-
-        line = 'Records Exposed: 446,515,334'
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, 'Records Exposed:')
-
-        line = 'Breached Entity: State Published Date Breach  Category'
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, 'Breached Entity:')
-
-        line = 'No unwanted keyword in this text'
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, None)
-
-        line = ''
-        res = src.check_unwanted_keywords_in_the_line(line)
-        self.assertEqual(res, None)
+        for case in test_cases:
+            self.assertEqual(
+                src.check_unwanted_keywords_in_the_line(case['input']),
+                case['expected'])
 
     def test_get_data_lines_from_text(self):
-        text = 'Identity Theft\n' \
+        input = 'Identity Theft\n' \
             '2018 Breach List:\n' \
             'Records Exposed:\n' \
             'Breached Entity:\n'  \
@@ -41,111 +37,157 @@ class TestPdfDataExtractor(unittest.TestCase):
             'Source: www.databreaches.net\n' \
             'URL:  # https://www.databreaches.net\n' \
             'Breached Entity:\n'
-        eq = [['California Department of Insurance',
-               '("CDI")',
-               'Source: www.databreaches.net',
-               'URL:  # https://www.databreaches.net']]
-        res = src.get_data_lines_from_text(text)
-        self.assertEqual(res[0][0], eq[0][0])
-        self.assertEqual(res[0][1], eq[0][1])
-        self.assertEqual(res[0][2], eq[0][2])
-        self.assertEqual(res[0][3], eq[0][3])
+        expected = [['California Department of Insurance',
+                     '("CDI")',
+                     'Source: www.databreaches.net',
+                     'URL:  # https://www.databreaches.net']]
+
+        self.assertEqual(
+            src.get_data_lines_from_text(input), expected)
 
     def test_extract_data(self):
-        data_list = [['California CA 12/13/2018 Electronic Government/Military Unknown',
-                      '("CDI")',
-                      'Source: www.databreaches.net',
-                      'URL: #https://www.databreaches.net']]
-        eq = [['California (CDI)', 'CA', '12/13/2018', 'Electronic',
-               'Government/Military', 'Unknown',
-               'www.databreaches.net', '#https://www.databreaches.net']]
-        res = src.extract_data(data_list)
-        self.assertEqual(res, eq)
+        input = [['California CA 12/13/2018 Electronic Government/Military Unknown',
+                  '("CDI")',
+                  'Source: www.databreaches.net',
+                  'URL: #https://www.databreaches.net']]
+        expected = [['California (CDI)', 'CA', '12/13/2018', 'Electronic',
+                     'Government/Military', 'Unknown',
+                     'www.databreaches.net', '#https://www.databreaches.net']]
+        self.assertEqual(src.extract_data(input), expected)
 
     def test_get_records(self):
-        line = 'California CA 12/13/2018 Electronic Government/Military Unknown'
-        self.assertEqual(src.get_records(line), 'Unknown')
-        self.assertEqual(src.get_records(''), '-')
+        test_cases = [
+            {'input': 'California CA 12/13/2018 Electronic Government/Military Unknown',
+             'expected': 'Unknown'},
+            {'input': '',
+             'expected': '-'}
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_records(case['input']), case['expected'])
 
     def test_get_category(self):
-        line = 'California CA 12/13/2018 Electronic Government/Military Unknown'
-        self.assertEqual(src.get_category(line), 'Government/Military')
-        self.assertEqual(src.get_category(''), '-')
+        test_cases = [
+            {'input': 'California CA 12/13/2018 Electronic Government/Military Unknown',
+             'expected': 'Government/Military'},
+            {'input': '',
+             'expected': '-'}
+        ]
+        for case in test_cases:
+            self.assertEqual(
+                src.get_category(case['input']), case['expected'])
 
     def test_get_type(self):
-        line = 'California CA 12/13/2018 Electronic Government/Military Unknown'
-        self.assertEqual(src.get_type(line), 'Electronic')
-        self.assertEqual(src.get_type(
-            'a a a Paper Data a a'), 'Paper Data')
-        self.assertEqual(src.get_type('a a a irrelevant a a'), '-')
-        self.assertEqual(src.get_type(''), '-')
+        test_cases = [
+            {"input": 'California CA 12/13/2018 Electronic Government/Military Unknown',
+             "expected": 'Electronic'},
+            {"input": 'a a a Paper Data a a',
+             "expected": 'Paper Data'},
+            {"input": 'a a a irrelevant a a',
+             "expected": '-'},
+            {"input": '',
+             "expected": '-'}
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_type(case['input']), case['expected'])
 
     def test_get_date(self):
-        line = 'California CA 12/13/2018 Electronic Government/Military Unknown'
-        self.assertEqual(src.get_date(line), '12/13/2018')
-        self.assertEqual(src.get_date('a a a 12/13/201 a a'), '-')
-        self.assertEqual(src.get_date('a a a 2/13/2018 a a'), '2/13/2018')
-        self.assertEqual(src.get_date('a a a 12/3/2018 a a'), '12/3/2018')
-        self.assertEqual(src.get_date(''), '-')
+        test_cases = [
+            {"input": 'California CA 12/13/2018 Electronic Government/Military Unknown',
+             "expected": '12/13/2018'},
+            {"input": 'a a a 12/13/201 a a',
+             "expected": '-'},
+            {"input": 'a a a 2/13/2018 a a',
+             "expected": '2/13/2018'},
+            {"input": 'a a a 12/3/2018 a a',
+             "expected": '12/3/2018'},
+            {"input": '',
+             "expected": '-'},
+
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_date(case['input']), case['expected'])
 
     def test_get_state(self):
-        line = 'California CA 12/13/2018 Electronic Government/Military Unknown'
-        self.assertEqual(src.get_state(line), 'CA')
-        self.assertEqual(src.get_state('a a a CAA a a'), '-')
-        self.assertEqual(src.get_state('a a C CA CC CC'), 'CA')
-        self.assertEqual(src.get_state('a a AAA AAA CA'), 'CA')
-        self.assertEqual(src.get_state('AAaaa a CA a a a'), 'CA')
-        self.assertEqual(src.get_state(''), '-')
+        test_cases = [
+            {"input": 'California CA 12/13/2018 Electronic Government/Military Unknown',
+             "expected": 'CA'},
+            {"input": 'a a a CAA a a',
+             "expected": '-'},
+            {"input": 'a a C CA CC CC',
+             "expected": 'CA'},
+            {"input": 'a a AAA AAA CA',
+             "expected": 'CA'},
+            {"input": 'AAaaa a CA a a a',
+             "expected": 'CA'},
+            {"input": '',
+             "expected": '-'},
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_state(case['input']), case['expected'])
 
     def test_get_source(self):
-        line = 'Source: www.databreaches.net'
-        self.assertEqual(src.get_source(line), 'www.databreaches.net')
-        self.assertEqual(src.get_source('Source:  '), '-')
-        self.assertEqual(src.get_source('Source:'), '-')
-        self.assertEqual(src.get_source(''), '-')
+        test_cases = [
+            {"input": 'Source: www.databreaches.net',
+             "expected": 'www.databreaches.net'},
+            {"input": 'Source:  ',
+             "expected": '-'},
+            {"input": 'Source:',
+             "expected": '-'},
+            {"input": '',
+             "expected": '-'},
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_source(case['input']), case['expected'])
 
     def test_get_url(self):
-        line = 'URL: #https://www.databreaches.net'
-        self.assertEqual(src.get_url(line), '#https://www.databreaches.net')
-        self.assertEqual(src.get_url('URL:  '), '-')
-        self.assertEqual(src.get_url('URL:'), '-')
-        self.assertEqual(src.get_source(''), '-')
+        test_cases = [
+            {"input": 'URL: #https://www.databreaches.net',
+             "expected": '#https://www.databreaches.net'},
+            {"input": 'URL:  ',
+             "expected": '-'},
+            {"input": 'URL:',
+             "expected": '-'},
+            {"input": '',
+             "expected": '-'}
+        ]
+        for case in test_cases:
+            self.assertEqual(src.get_source(case['input']), case['expected'])
 
     def test_get_entity(self):
-        block = ['California asd asd']
-        extracted_text = 'asd asd'
-        self.assertEqual(src.get_entity(block, extracted_text), 'California')
+        test_cases = [
+            {"input": (['California asd asd'], 'asd asd'),
+             "expected": 'California'},
+            {"input": (['California asd asd', '("C")', '', ''], 'asd asd'),
+             "expected": 'California (C)'},
+            {"input": (['', '(C)', '', ''],  'asd asd'),
+             "expected": '(C)'},
+            {"input": (['', '', '', ''], 'asd asd'),
+             "expected": '-'},
+        ]
 
-        block = ['California asd asd', '("C")', '', '']
-        self.assertEqual(src.get_entity(
-            block, extracted_text), 'California (C)')
-
-        block = ['', '(C)', '', '']
-        self.assertEqual(src.get_entity(
-            block, extracted_text), '(C)')
-
-        block = ['', '', '', '']
-        self.assertEqual(src.get_entity(
-            block, extracted_text), '-')
+        for case in test_cases:
+            self.assertEqual(
+                src.get_entity(case['input'][0], case['input'][1]), case['expected'])
 
     def test_file_list(self):
-        files = ['aaa.pdf', 'bbb.pdf']
-        self.assertTrue(files)
-        for file in files:
-            self.assertRegexpMatches(file, '.pdf')
+        input = ['aaa.pdf', 'bbb.pdf']
+        expected = '.pdf'
+        self.assertTrue(input)
+        for file in input:
+            self.assertRegexpMatches(file, expected)
 
     def test_create_dataframe(self):
-        col = ['BreachedEntity',
-               'State',
-               'PublishedDate',
-               'BreachType',
-               'BreachCategory',
-               'RecorsReported',
-               'Source',
-               'URL']
+        expected = ['BreachedEntity',
+                    'State',
+                    'PublishedDate',
+                    'BreachType',
+                    'BreachCategory',
+                    'RecorsReported',
+                    'Source',
+                    'URL']
         df = src.create_dataframe()
         for i, column in enumerate(df.columns):
-            self.assertEqual(column, col[i])
+            self.assertEqual(column, expected[i])
 
 
 if __name__ == '__main__':
