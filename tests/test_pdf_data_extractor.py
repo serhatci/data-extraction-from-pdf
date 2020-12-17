@@ -186,7 +186,7 @@ class TestPdfDataExtractor(unittest.TestCase):
                     'Source',
                     'URL']
         df = src.create_dataframe()
-        self.assertListEqual(df.columns, expected)
+        self.assertListEqual(df.columns.tolist(), expected)
 
 
 if __name__ == '__main__':
