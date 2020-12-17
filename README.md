@@ -24,8 +24,8 @@ Script works Python 3.7 or higher version.
 Below libraries should be installed:
 
 ```
-pip install pdfplumber
-pip install pandas
+pip install pdfplumber~=0.5.25
+pip install pandas~=0.25.1
 ```
 
 ## Visualization of extracted text from pdf file

@@ -1,2 +1,2 @@
-pdfplumber
-pandas
+pdfplumber~=0.5.25
+pandas~=0.25.1
