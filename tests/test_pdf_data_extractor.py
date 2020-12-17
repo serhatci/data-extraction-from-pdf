@@ -42,7 +42,7 @@ class TestPdfDataExtractor(unittest.TestCase):
                      'Source: www.databreaches.net',
                      'URL:  # https://www.databreaches.net']]
 
-        self.assertEqual(
+        self.assertListEqual(
             src.get_data_lines_from_text(input), expected)
 
     def test_extract_data(self):
@@ -53,7 +53,7 @@ class TestPdfDataExtractor(unittest.TestCase):
         expected = [['California (CDI)', 'CA', '12/13/2018', 'Electronic',
                      'Government/Military', 'Unknown',
                      'www.databreaches.net', '#https://www.databreaches.net']]
-        self.assertEqual(src.extract_data(input), expected)
+        self.assertListEqual(src.extract_data(input), expected)
 
     def test_get_records(self):
         test_cases = [
@@ -186,8 +186,7 @@ class TestPdfDataExtractor(unittest.TestCase):
                     'Source',
                     'URL']
         df = src.create_dataframe()
-        for i, column in enumerate(df.columns):
-            self.assertEqual(column, expected[i])
+        self.assertListEqual(df.columns, expected)
 
 
 if __name__ == '__main__':
