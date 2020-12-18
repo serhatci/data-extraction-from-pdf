@@ -28,7 +28,7 @@ class TestPdfDataExtractor(unittest.TestCase):
                 case['expected'])
 
     def test_get_data_lines_from_text(self):
-        input = 'Identity Theft\n' \
+        test_input = 'Identity Theft\n' \
             '2018 Breach List:\n' \
             'Records Exposed:\n' \
             'Breached Entity:\n'  \
@@ -43,17 +43,17 @@ class TestPdfDataExtractor(unittest.TestCase):
                      'URL:  # https://www.databreaches.net']]
 
         self.assertListEqual(
-            src.get_data_lines_from_text(input), expected)
+            src.get_data_lines_from_text(test_input), expected)
 
     def test_extract_data(self):
-        input = [['California CA 12/13/2018 Electronic Government/Military Unknown',
-                  '("CDI")',
-                  'Source: www.databreaches.net',
-                  'URL: #https://www.databreaches.net']]
+        test_input = [['California CA 12/13/2018 Electronic Government/Military Unknown',
+                       '("CDI")',
+                       'Source: www.databreaches.net',
+                       'URL: #https://www.databreaches.net']]
         expected = [['California (CDI)', 'CA', '12/13/2018', 'Electronic',
                      'Government/Military', 'Unknown',
                      'www.databreaches.net', '#https://www.databreaches.net']]
-        self.assertListEqual(src.extract_data(input), expected)
+        self.assertListEqual(src.extract_data(test_input), expected)
 
     def test_get_records(self):
         test_cases = [
@@ -170,9 +170,9 @@ class TestPdfDataExtractor(unittest.TestCase):
                 src.get_entity(case['input'][0], case['input'][1]), case['expected'])
 
     def test_file_list(self):
-        input = ['aaa.pdf', 'bbb.pdf']
+        test_input = ['aaa.pdf', 'bbb.pdf']
         expected = '.pdf'
-        self.assertTrue(input)
+        self.assertTrue(test_input)
         for file in input:
             self.assertRegexpMatches(file, expected)
 
